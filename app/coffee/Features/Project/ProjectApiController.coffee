@@ -1,6 +1,12 @@
 ProjectDetailsHandler = require("./ProjectDetailsHandler")
 logger = require("logger-sharelatex")
 
+async = require("async")
+Project = require('../../models/Project').Project
+TagsHandler = require("../Tags/TagsHandler")
+ProjectController = require("./ProjectController")
+LimitationsManager = require("../Subscription/LimitationsManager")
+User = require('../../models/User').User
 
 module.exports = 
 
@@ -12,4 +18,16 @@ module.exports =
 				return res.send 500
 			req.session.destroy()
 			res.json(projDetails)
-
+      
+	getProjectList : (req, res)->
+		user_id = req.session.user._id
+		Project.findAllUsersProjects user_id, 'name lastUpdated publicAccesLevel archived owner_ref', (err, projects, collabertions, readOnlyProjects) ->
+			if err?
+				logger.err err:err, "error getting data for project list"
+				return next(err)
+			
+			logger.log allProjects: projects, readonlyProjects: readOnlyProjects, "getting all projects"
+			res.json({
+				projects: projects,
+				readonlyProjects: readOnlyProjects
+			})

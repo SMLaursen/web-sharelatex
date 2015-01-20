@@ -155,6 +155,11 @@ module.exports = class Router
 		app.post "/project/:Project_id/messages", SecurityManager.requestCanAccessProject, ChatController.sendMessage
 		
 		app.get  /learn(\/.*)?/, WikiController.getPage
+    
+    #API
+    
+		app.get '/api/project/list', AuthenticationController.requireLogin(), ProjectApiController.getProjectList
+    
 
 		#Admin Stuff
 		app.get  '/admin', SecurityManager.requestIsAdmin, AdminController.index
