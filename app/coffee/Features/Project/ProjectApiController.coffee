@@ -19,15 +19,24 @@ module.exports =
 			req.session.destroy()
 			res.json(projDetails)
       
+	getProjectDetails : (req, res)->
+		{project_id} = req.params
+		ProjectDetailsHandler.getDetails project_id, (err, projDetails)->
+			if err?
+				logger.log err:err, project_id:project_id, "something went wrong getting project details"
+				return res.send 500
+			req.session.destroy()
+			res.json(projDetails)
+      
 	getProjectList : (req, res)->
 		user_id = req.session.user._id
-		Project.findAllUsersProjects user_id, 'name lastUpdated publicAccesLevel archived owner_ref', (err, projects, collabertions, readOnlyProjects) ->
+		Project.findAllUsersProjects user_id, 'name lastUpdated publicAccesLevel archived owner_ref', (err, myProjects, collaborations, readOnlyProjects) ->
 			if err?
 				logger.err err:err, "error getting data for project list"
 				return next(err)
-			
-			logger.log allProjects: projects, readonlyProjects: readOnlyProjects, "getting all projects"
+				
+			allProjects = myProjects.concat collaborations concat.readOnlyProjects
+			logger.log projects: allProjects, "getting all projects"
 			res.json({
-				projects: projects,
-				readonlyProjects: readOnlyProjects
+				projects: allProjects 
 			})
