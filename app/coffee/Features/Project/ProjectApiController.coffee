@@ -26,7 +26,7 @@ module.exports =
 				logger.err err:err, "error getting data for project list"
 				return next(err)
 				
-			allProjects = myProjects.concat collaborations concat.readOnlyProjects
+			allProjects = myProjects.concat collaborations.concat readOnlyProjects
 			logger.log projects: allProjects, "getting all projects"
 			res.json({
 				projects: allProjects 
